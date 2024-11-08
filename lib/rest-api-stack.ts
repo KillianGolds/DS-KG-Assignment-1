@@ -95,6 +95,19 @@ export class RestApiStack extends cdk.Stack {
       },
     });
 
+    // update a book by bookId
+    const updateBookFn = new lambdanode.NodejsFunction(this, "UpdateBookFn", {
+      architecture: lambda.Architecture.ARM_64,
+      runtime: lambda.Runtime.NODEJS_18_X,
+      entry: `${__dirname}/../lambdas/updateBook.ts`,
+      timeout: cdk.Duration.seconds(10),
+      memorySize: 128,
+      environment: {
+        TABLE_NAME: booksTable.tableName,
+        REGION: "eu-west-1",
+      },
+    });
+
     // Data Seeding
     new custom.AwsCustomResource(this, "booksddbInitData", {
       onCreate: {
@@ -118,6 +131,7 @@ export class RestApiStack extends cdk.Stack {
     booksTable.grantReadData(getBooksByAuthorFn);
     booksTable.grantReadWriteData(newBookFn);
     booksTable.grantReadWriteData(deleteBookFn);
+    booksTable.grantReadWriteData(updateBookFn);
 
     // API Gateway setup
     const api = new apig.RestApi(this, "RestAPI", {
@@ -169,6 +183,12 @@ export class RestApiStack extends cdk.Stack {
     bookEndpoint.addMethod(
       "DELETE",
       new apig.LambdaIntegration(deleteBookFn, { proxy: true })
+    );
+
+    // PUT method for the /books/{bookId} endpoint
+    bookEndpoint.addMethod(
+      "PUT",
+      new apig.LambdaIntegration(updateBookFn, { proxy: true })
     );
   }
 }
