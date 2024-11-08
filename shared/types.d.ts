@@ -1,12 +1,11 @@
 // types.d.ts
-
 export interface Book {
-  bookId: string;
+  bookId: number;          // Sort key
+  author: string;          // Partition key
   title: string;
-  author: string;
   genre?: string;
-  publishedDate?: string;  // Format: YYYY-MM-DD
-  summary?: string;
+  publishedYear?: number;  // Numeric attribute
+  summary?: string;        // Longer text content suitable for Amazon Translate when i get to that stage
 }
 
 export interface BookQueryParams {

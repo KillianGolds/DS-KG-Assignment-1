@@ -1,10 +1,9 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
-import { Book } from "../shared/types"; // Ensure the Book interface is correctly imported
-import { createDdbDocClient } from "./utils/dbClient"; // Import the createDdbDocClient function
-import { v4 as uuidv4 } from "uuid";  // Generate unique book IDs
+import { Book } from "../shared/types"; 
+import { createDdbDocClient } from "./utils/dbClient"; 
 
-const ddbDocClient = createDdbDocClient(); 
+const ddbDocClient = createDdbDocClient();
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => { 
   try {
@@ -17,29 +16,32 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       };
     }
 
-    const newBook: Book = { // Create a new book object
-      bookId: uuidv4(), // Generate a unique ID for the book
+    // Generate a new book with an incrementing book ID (or other logic if needed)
+    const bookId = Date.now(); // Using timestamp as a simple numeric ID
+
+    const newBook: Book = { 
+      bookId: bookId,
       title: body.title,
       author: body.author,
-      genre: body.genre || "Unknown",
-      publishedDate: body.publishedDate || "Unknown",
-      summary: body.summary || "No summary available",
+      genre: body.genre || "Unknown", 
+      publishedYear: body.publishedYear || new Date().getFullYear(), // default to current year if not provided
+      summary: body.summary || "Lorem ipsum is typically a corrupted version of De finibus bonorum et malorum, a 1st-century BC text by the Roman statesman and philosopher Cicero, with words altered, added, and removed to make it nonsensical and improper Latin. The first two words themselves are a truncation of dolorem ipsum pain itself."
     };
 
-    await ddbDocClient.send(new PutCommand({ // Add the book to the database
+    await ddbDocClient.send(new PutCommand({ // Add the new book to the database
       TableName: process.env.TABLE_NAME,
       Item: newBook,
     }));
 
-    return {
+    return { // Return a success message with the new book
       statusCode: 201,
-      body: JSON.stringify({ message: "Book added successfully", book: newBook }), // Return a success message
+      body: JSON.stringify({ message: "Book added successfully", book: newBook }), 
     };
   } catch (error) {
-    console.error("Error adding book:", error); // Log the error
-    return {
+    console.error("Error adding book:", error); 
+    return { // Return an error message if the book could not be added
       statusCode: 500,
-      body: JSON.stringify({ message: "Could not add the book" }), // Return an error message
+      body: JSON.stringify({ message: "Could not add the book" }), 
     };
   }
 };

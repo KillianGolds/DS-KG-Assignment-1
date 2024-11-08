@@ -1,52 +1,58 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { GetCommand } from "@aws-sdk/lib-dynamodb";
-import { createDdbDocClient } from "./utils/dbClient"; // Import the createDdbDocClient function
+import { QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { createDdbDocClient } from "./utils/dbClient";
 
 const ddbDocClient = createDdbDocClient();
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   try {
     console.log("[EVENT]", JSON.stringify(event));
-    
+
     const parameters = event?.pathParameters;
     const bookId = parameters?.bookId;
 
     if (!bookId) { // Check if the book ID is provided
       return {
-        statusCode: 404,
+        statusCode: 400,
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ message: "Missing book ID" }),
       };
     }
 
-    const commandOutput = await ddbDocClient.send( // Fetch the book from the database
-      new GetCommand({
+    const bookIdNumber = Number(bookId);
+
+    const commandOutput = await ddbDocClient.send( // Query the database for the book
+      new QueryCommand({
         TableName: process.env.TABLE_NAME,
-        Key: { bookId },
+        IndexName: process.env.INDEX_NAME, // Use the BookIdIndex
+        KeyConditionExpression: "bookId = :bookId",
+        ExpressionAttributeValues: {
+          ":bookId": bookIdNumber,
+        },
       })
     );
 
-    console.log("GetCommand response: ", commandOutput); 
+    console.log("QueryCommand response: ", commandOutput); // Log the response
 
-    if (!commandOutput.Item) { // Check if the book exists
+    // If the book is not found
+    if (!commandOutput.Items || commandOutput.Items.length === 0) { 
       return {
         statusCode: 404,
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ message: "Invalid book ID" }),
+        body: JSON.stringify({ message: "Book not found" }),
       };
     }
-
     return { 
       statusCode: 200,
-      headers: { "content-type": "application/json" }, 
-      body: JSON.stringify({ data: commandOutput.Item }), 
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ data: commandOutput.Items[0] }), // Return first matching item
     };
-
-  } catch (error: any) { 
-    console.error("Error fetching book by ID:", error); // Log the error
-    return { // Return an error message
+    
+  } catch (error: any) {
+    console.error("Error fetching book by ID:", error);
+    return {
       statusCode: 500,
-      headers: { "content-type": "application/json" }, 
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({ error: error.message }),
     };
   }
