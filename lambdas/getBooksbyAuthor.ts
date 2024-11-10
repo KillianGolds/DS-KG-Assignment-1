@@ -30,7 +30,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
 
   } catch (error: any) {
     console.error("Error fetching books by author:", error);
-    return {
+    return { // Return an error message
       statusCode: 500,
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ error: error.message }),
