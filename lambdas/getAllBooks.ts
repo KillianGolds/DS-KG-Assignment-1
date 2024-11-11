@@ -1,6 +1,6 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { ScanCommand } from "@aws-sdk/lib-dynamodb";
-import { createDdbDocClient } from "./utils/dbClient"; // Import the createDdbDocClient function
+import { createDdbDocClient } from '@db-layer/utils/dbClient';
 
 const ddbDocClient = createDdbDocClient();
 

@@ -1,7 +1,7 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { Book } from "../shared/types"; 
-import { createDdbDocClient } from "./utils/dbClient"; 
+import { createDdbDocClient } from '@db-layer/utils/dbClient';
 
 const ddbDocClient = createDdbDocClient();
 

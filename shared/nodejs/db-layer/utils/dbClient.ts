@@ -1,3 +1,4 @@
+// DynamoDB Document Client shared by all Lambda functions in the project as a lambda layer
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 

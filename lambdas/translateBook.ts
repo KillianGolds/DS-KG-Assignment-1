@@ -1,5 +1,5 @@
 import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
-import { createDdbDocClient } from './utils/dbClient';
+import { createDdbDocClient } from '@db-layer/utils/dbClient';
 import { GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import * as AWS from 'aws-sdk';
 

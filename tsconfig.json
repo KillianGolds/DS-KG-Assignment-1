@@ -20,15 +20,18 @@
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "typeRoots": [
-      "./node_modules/@types"
-    ]
+    "baseUrl": "./",
+    "paths": {
+      "@db-layer/*": ["shared/nodejs/db-layer/*"] // Alias for local development
+    }
   },
   "exclude": [
     "node_modules",
     "cdk.out"
   ],
   "include": [
-    "shared/*.json"
+    "shared/**/*.json",
+    "src/**/*.ts",
+    "types/**/*.d.ts"
   ]
 }

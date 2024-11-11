@@ -49,6 +49,13 @@ export class MyAppStack extends cdk.Stack {
       partitionKey: { name: "bookId", type: dynamodb.AttributeType.NUMBER },
     });
 
+    // Lambda Layer for DynamoDB Document Client utilities
+    const dbLayer = new lambda.LayerVersion(this, "DbClientLayer", {
+      code: lambda.Code.fromAsset(path.join(__dirname, '../shared')), // Path to the shared code
+      compatibleRuntimes: [lambda.Runtime.NODEJS_18_X], 
+      description: "Layer for DynamoDB Document Client utilities", 
+    });
+
     // Lambda Functions for Auth Operations
     // Signup Function
     const signupFn = new lambdanode.NodejsFunction(this, "SignupFunction", {
@@ -114,10 +121,10 @@ export class MyAppStack extends cdk.Stack {
 
     // Auth Endpoints
     const authEndpoint = authApi.root.addResource("auth");
-    authEndpoint.addResource("signup").addMethod("POST", new apig.LambdaIntegration(signupFn));
-    authEndpoint.addResource("signin").addMethod("POST", new apig.LambdaIntegration(signinFn));
-    authEndpoint.addResource("signout").addMethod("GET", new apig.LambdaIntegration(signoutFn));
-    authEndpoint.addResource("confirm_signup").addMethod("POST", new apig.LambdaIntegration(confirmSignupFn));
+    authEndpoint.addResource("signup").addMethod("POST", new apig.LambdaIntegration(signupFn)); // Signup endpoint
+    authEndpoint.addResource("signin").addMethod("POST", new apig.LambdaIntegration(signinFn)); // Signin endpoint
+    authEndpoint.addResource("signout").addMethod("GET", new apig.LambdaIntegration(signoutFn)); // Signout endpoint
+    authEndpoint.addResource("confirm_signup").addMethod("POST", new apig.LambdaIntegration(confirmSignupFn)); // Confirm signup endpoint
 
     // Lambda Functions for Book Operations
     const commonLambdaProps = {
@@ -129,6 +136,7 @@ export class MyAppStack extends cdk.Stack {
         TABLE_NAME: booksTable.tableName,
         REGION: "eu-west-1",
       },
+      layers: [dbLayer], // Add the DynamoDB layer to the Lambda functions
     };
 
     // Get Book by Id Function

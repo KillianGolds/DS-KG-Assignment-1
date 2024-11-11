@@ -1,7 +1,6 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { UpdateCommand } from "@aws-sdk/lib-dynamodb";
-import { createDdbDocClient } from "./utils/dbClient";
-
+import { createDdbDocClient } from '@db-layer/utils/dbClient';
 const ddbDocClient = createDdbDocClient();
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
