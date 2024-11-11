@@ -9,6 +9,7 @@ import * as cognito from "aws-cdk-lib/aws-cognito";
 import * as path from "path";
 import { generateBatch } from "../shared/util";
 import { books } from "../seed/books";
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 export class MyAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -73,7 +74,6 @@ export class MyAppStack extends cdk.Stack {
       },
     });
 
-
     // Signout Function
     const signoutFn = new lambdanode.NodejsFunction(this, "SignoutFunction", {
       runtime: lambda.Runtime.NODEJS_18_X,
@@ -85,7 +85,6 @@ export class MyAppStack extends cdk.Stack {
         REGION: cdk.Aws.REGION,
       },
     });
-
 
     // Confirm Signup Function
     const confirmSignupFn = new lambdanode.NodejsFunction(this, "ConfirmSignupFunction", {
@@ -176,6 +175,18 @@ export class MyAppStack extends cdk.Stack {
       entry: `${__dirname}/../lambdas/updateBook.ts`,
     });
 
+    // Translate Book Function
+    const translateBookFn = new lambdanode.NodejsFunction(this, "TranslateBookFn", {
+      ...commonLambdaProps,
+      entry: `${__dirname}/../lambdas/translateBook.ts`,
+    });
+
+    // Grant Translate permission to the Lambda function role
+    translateBookFn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ["translate:TranslateText"],
+      resources: ["*"],
+    }));
+
     // Data Seeding
     new custom.AwsCustomResource(this, "booksddbInitData", {
       onCreate: {
@@ -200,6 +211,7 @@ export class MyAppStack extends cdk.Stack {
     booksTable.grantReadWriteData(newBookFn);
     booksTable.grantReadWriteData(deleteBookFn);
     booksTable.grantReadWriteData(updateBookFn);
+    booksTable.grantReadWriteData(translateBookFn);
 
     // API Gateway setup for Books API
     const booksApi = new apig.RestApi(this, "BooksApi", {
@@ -216,15 +228,16 @@ export class MyAppStack extends cdk.Stack {
     });
 
     // API Endpoints for Books
-    const booksEndpoint = booksApi.root.addResource("books");
-    const bookEndpoint = booksEndpoint.addResource("{bookId}");
+    const booksEndpoint = booksApi.root.addResource("books"); // Books endpoint
+    const bookEndpoint = booksEndpoint.addResource("{bookId}"); // Book endpoint
+    const translationEndpoint = bookEndpoint.addResource("translation"); // Translation endpoint
+
 
     // Public endpoints (no authentication required)
     booksEndpoint.addMethod("GET", new apig.LambdaIntegration(getAllBooksFn)); // GET all books
     booksEndpoint.addResource("by-author").addMethod("GET", new apig.LambdaIntegration(getBooksByAuthorFn)); // GET books by author
     bookEndpoint.addMethod("GET", new apig.LambdaIntegration(getBookByIdFn)); //  GET book by bookId
     
-
     // Protected endpoints (require authentication)
     booksEndpoint.addMethod("POST", new apig.LambdaIntegration(newBookFn), { // POST new book
       authorizer: cognitoAuthorizer,
@@ -241,6 +254,9 @@ export class MyAppStack extends cdk.Stack {
       authorizationType: apig.AuthorizationType.COGNITO,
     });
 
-    
+    translationEndpoint.addMethod("GET", new apig.LambdaIntegration(translateBookFn), { // GET translated book
+      authorizer: cognitoAuthorizer,
+      authorizationType: apig.AuthorizationType.COGNITO,
+    });
   }
 }

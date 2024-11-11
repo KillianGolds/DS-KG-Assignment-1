@@ -1,19 +1,22 @@
-// types.d.ts
 export interface Book {
   bookId: number;          // Sort key
   author: string;          // Partition key
   title: string;
   genre?: string;
   publishedYear?: number;  // Numeric attribute
-  summary?: string;        // Longer text content suitable for Amazon Translate when i get to that stage
+  summary?: string;        // Longer text content suitable for Amazon Translate
+  translatedSummaries?: {
+    [languageCode: string]: string;  // Translated summaries for different languages
+  };
 }
 
+// Interfaces for API Gateway
 export interface BookQueryParams {
   author?: string;
   genre?: string;
 }
 
-// New interfaces for authentication
+// Interfaces for authentication
 
 export interface SignUpBody {
   username: string;
