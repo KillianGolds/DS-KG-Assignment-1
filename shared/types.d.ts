@@ -8,6 +8,7 @@ export interface Book {
   translatedSummaries?: {
     [languageCode: string]: string;  // Translated summaries for different languages
   };
+  ownerId: string;          // User ID of the book owner which uses Cognito identity sub for the user so that the user is uniquely identified
 }
 
 // Interfaces for API Gateway
@@ -17,7 +18,6 @@ export interface BookQueryParams {
 }
 
 // Interfaces for authentication
-
 export interface SignUpBody {
   username: string;
   password: string;

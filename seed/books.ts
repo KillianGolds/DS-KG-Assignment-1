@@ -7,7 +7,8 @@ export const books: Book[] = [
     author: "Harper Lee",
     genre: "Fiction",
     publishedYear: 1960,
-    summary: "A novel about the serious issues of rape and racial inequality told through the eyes of young Scout Finch."
+    summary: "A novel about the serious issues of rape and racial inequality told through the eyes of young Scout Finch.",
+    ownerId: "admin" // Adding ownerId for seed data
   },
   {
     bookId: 2,
@@ -15,7 +16,8 @@ export const books: Book[] = [
     author: "George Orwell",
     genre: "Dystopian",
     publishedYear: 1949,
-    summary: "A chilling dystopia of a totalitarian regime that employs surveillance and manipulation to control its citizens."
+    summary: "A chilling dystopia of a totalitarian regime that employs surveillance and manipulation to control its citizens.",
+    ownerId: "admin"
   },
   {
     bookId: 3,
@@ -23,7 +25,8 @@ export const books: Book[] = [
     author: "F. Scott Fitzgerald",
     genre: "Classic",
     publishedYear: 1925,
-    summary: "The story of the mysterious millionaire Jay Gatsby and his love for Daisy Buchanan, set in the Roaring Twenties."
+    summary: "The story of the mysterious millionaire Jay Gatsby and his love for Daisy Buchanan, set in the Roaring Twenties.",
+    ownerId: "admin"
   },
   {
     bookId: 4,
@@ -31,7 +34,8 @@ export const books: Book[] = [
     author: "Jane Austen",
     genre: "Romance",
     publishedYear: 1813,
-    summary: "A witty exploration of manners, marriage, and morality among the British gentry of the early 19th century."
+    summary: "A witty exploration of manners, marriage, and morality among the British gentry of the early 19th century.",
+    ownerId: "admin"
   },
   {
     bookId: 5,
@@ -39,7 +43,8 @@ export const books: Book[] = [
     author: "Herman Melville",
     genre: "Adventure",
     publishedYear: 1851,
-    summary: "The narrative of Captain Ahab's obsessive quest to seek revenge on Moby Dick, a giant white whale."
+    summary: "The narrative of Captain Ahab's obsessive quest to seek revenge on Moby Dick, a giant white whale.",
+    ownerId: "admin"
   },
   {
     bookId: 6,
@@ -47,7 +52,8 @@ export const books: Book[] = [
     author: "J.D. Salinger",
     genre: "Fiction",
     publishedYear: 1951,
-    summary: "A story of teenage rebellion and confusion narrated by the iconic character Holden Caulfield."
+    summary: "A story of teenage rebellion and confusion narrated by the iconic character Holden Caulfield.",
+    ownerId: "admin"
   },
   {
     bookId: 7,
@@ -55,7 +61,8 @@ export const books: Book[] = [
     author: "J.R.R. Tolkien",
     genre: "Fantasy",
     publishedYear: 1937,
-    summary: "The adventure of Bilbo Baggins, who is swept into a quest to reclaim the lost Dwarf Kingdom of Erebor."
+    summary: "The adventure of Bilbo Baggins, who is swept into a quest to reclaim the lost Dwarf Kingdom of Erebor.",
+    ownerId: "admin"
   },
   {
     bookId: 8,
@@ -63,7 +70,8 @@ export const books: Book[] = [
     author: "Ray Bradbury",
     genre: "Dystopian",
     publishedYear: 1953,
-    summary: "A dystopian tale of a future American society where books are outlawed and 'firemen' burn any that are found."
+    summary: "A dystopian tale of a future American society where books are outlawed and 'firemen' burn any that are found.",
+    ownerId: "admin"
   },
   {
     bookId: 9,
@@ -71,7 +79,8 @@ export const books: Book[] = [
     author: "Aldous Huxley",
     genre: "Science Fiction",
     publishedYear: 1932,
-    summary: "A futuristic vision of a world where humans are engineered and controlled by a totalitarian regime."
+    summary: "A futuristic vision of a world where humans are engineered and controlled by a totalitarian regime.",
+    ownerId: "admin"
   },
   {
     bookId: 10,
@@ -79,7 +88,8 @@ export const books: Book[] = [
     author: "J.R.R. Tolkien",
     genre: "Fantasy",
     publishedYear: 1954,
-    summary: "The epic tale of the battle between good and evil, centering on Frodo Baggins' quest to destroy the One Ring."
+    summary: "The epic tale of the battle between good and evil, centering on Frodo Baggins' quest to destroy the One Ring.",
+    ownerId: "admin"
   },
   {
     bookId: 11,
@@ -87,7 +97,8 @@ export const books: Book[] = [
     author: "C.S. Lewis",
     genre: "Fantasy",
     publishedYear: 1950,
-    summary: "A series of adventures in the magical land of Narnia, beginning with four children who enter through a wardrobe."
+    summary: "A series of adventures in the magical land of Narnia, beginning with four children who enter through a wardrobe.",
+    ownerId: "admin"
   },
   {
     bookId: 12,
@@ -95,7 +106,8 @@ export const books: Book[] = [
     author: "Charlotte Brontë",
     genre: "Gothic Fiction",
     publishedYear: 1847,
-    summary: "The journey of the orphaned Jane Eyre, who faces adversity and finds love with Mr. Rochester."
+    summary: "The journey of the orphaned Jane Eyre, who faces adversity and finds love with Mr. Rochester.",
+    ownerId: "admin"
   },
   {
     bookId: 13,
@@ -103,7 +115,8 @@ export const books: Book[] = [
     author: "Emily Brontë",
     genre: "Gothic Fiction",
     publishedYear: 1847,
-    summary: "The turbulent and tragic story of Heathcliff and Catherine, set on the Yorkshire moors."
+    summary: "The turbulent and tragic story of Heathcliff and Catherine, set on the Yorkshire moors.",
+    ownerId: "admin"
   },
   {
     bookId: 14,
@@ -111,7 +124,8 @@ export const books: Book[] = [
     author: "George Orwell",
     genre: "Satire",
     publishedYear: 1945,
-    summary: "An allegorical novella that reflects the events leading up to the Russian Revolution of 1917 and beyond."
+    summary: "An allegorical novella that reflects the events leading up to the Russian Revolution of 1917 and beyond.",
+    ownerId: "admin"
   },
   {
     bookId: 15,
@@ -119,6 +133,7 @@ export const books: Book[] = [
     author: "John Steinbeck",
     genre: "Historical Fiction",
     publishedYear: 1939,
-    summary: "The story of the Joad family's struggles during the Great Depression as they travel from Oklahoma to California."
+    summary: "The story of the Joad family's struggles during the Great Depression as they travel from Oklahoma to California.",
+    ownerId: "admin" 
   }
 ];

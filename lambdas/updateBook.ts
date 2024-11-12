@@ -1,10 +1,21 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { createDdbDocClient } from '@db-layer/utils/dbClient';
+
 const ddbDocClient = createDdbDocClient();
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   try {
+    // Extract the user ID from the authorizer claims
+    const ownerId = (event.requestContext as any).authorizer?.claims?.sub;
+
+    if (!ownerId) {
+      return {
+        statusCode: 403,
+        body: JSON.stringify({ message: "Unauthorized request" }),
+      };
+    }
+
     const bookIdString = event.pathParameters?.bookId; 
     const body = event.body ? JSON.parse(event.body) : undefined;
 
@@ -28,16 +39,38 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       };
     }
 
+    // Retrieve the book item to validate ownership
+    const getCommand = new GetCommand({
+      TableName: process.env.TABLE_NAME,
+      Key: { author, bookId },
+    });
+
+    const getResult = await ddbDocClient.send(getCommand); // Get the book item from the database
+    if (!getResult.Item) { // Check if the book exists
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ message: "Book not found" }),
+      };
+    }
+
+    // Validate that the user attempting to update the book is the owner
+    if (getResult.Item.ownerId !== ownerId) {
+      return {
+        statusCode: 403,
+        body: JSON.stringify({ message: "You do not have permission to update this book" }),
+      };
+    }
+
+    // Prepare the UpdateCommand parameters
     const updateExpressions: string[] = []; // Array to store the update expressions
     const expressionAttributeNames: Record<string, string> = {}; // Object to store the attribute names
     const expressionAttributeValues: Record<string, any> = {}; // Object to store the attribute values
 
-    // Construct the update expression excluding primary keys (author and bookId)
-    for (const [key, value] of Object.entries(body)) {
+    for (const [key, value] of Object.entries(body)) { // Iterate over the fields in the request body
       if (key !== "author" && key !== "bookId") {  // Exclude author and bookId 
-        updateExpressions.push(`#${key} = :${key}`);
-        expressionAttributeNames[`#${key}`] = key;
-        expressionAttributeValues[`:${key}`] = value;
+        updateExpressions.push(`#${key} = :${key}`); // Add the update expression. The typescript expressions took a very long time to figure out.
+        expressionAttributeNames[`#${key}`] = key; // Add the attribute name
+        expressionAttributeValues[`:${key}`] = value; // Add the attribute value. 
       }
     }
 
@@ -49,7 +82,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       };
     }
 
-    const updateExpression = `SET ${updateExpressions.join(", ")}`; 
+    const updateExpression = `SET ${updateExpressions.join(", ")}`;  
 
     // Execute the UpdateCommand
     await ddbDocClient.send(new UpdateCommand({ 
